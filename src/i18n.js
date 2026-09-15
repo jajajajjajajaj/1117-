@@ -46,7 +46,7 @@ export const T = {
     notPublished: "아직 공개되지 않은 요일입니다.",
     time: "시간",
     assigned: "배정",
-    adminLoginSub: "관리자 코드를 입력하세요. (기본값 1234)",
+    adminLoginSub: "관리자 코드를 입력하세요. ",
     password: "관리자 코드",
     signIn: "들어가기",
     signOut: "로그아웃",
