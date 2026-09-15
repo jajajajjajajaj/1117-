@@ -1,11 +1,21 @@
 import { createClient } from "@supabase/supabase-js";
 
-const url = (import.meta.env.VITE_SUPABASE_URL || "").trim().replace(/^["']|["']$/g, "");
+const rawUrl = (import.meta.env.VITE_SUPABASE_URL || "").trim().replace(/^["']|["']$/g, "");
 const key = (import.meta.env.VITE_SUPABASE_ANON_KEY || "").trim().replace(/^["']|["']$/g, "");
+
+// 주소는 https://xxxx.supabase.co 까지만 사용합니다. 뒤에 /rest/v1 등이 붙어 있어도 잘라냅니다.
+// Keep only the origin: strips any trailing path such as /rest/v1.
+function normalizeUrl(u) {
+  if (!u) return "";
+  const withScheme = /^https?:\/\//i.test(u) ? u : `https://${u}`;
+  try { return new URL(withScheme).origin; } catch { return ""; }
+}
+const url = normalizeUrl(rawUrl);
 
 let client = null;
 let problem = "";
-if (!url || !key) problem = "missing";
+if (!rawUrl || !key) problem = "missing";
+else if (!url) problem = `invalid URL: ${rawUrl}`;
 else {
   try {
     client = createClient(url, key);
@@ -53,9 +63,16 @@ const TOKEN_KEY = "adminToken";
 const getToken = () => { try { return localStorage.getItem(TOKEN_KEY) || ""; } catch { return ""; } };
 const setToken = (t) => { try { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY); } catch {} };
 
+export class UnauthorizedError extends Error {
+  constructor() { super("unauthorized"); this.name = "UnauthorizedError"; }
+}
+
 async function rpc(fn, args) {
   const { data, error } = await supabase.rpc(fn, args);
-  if (error) throw error;
+  if (error) {
+    if (/unauthorized/i.test(error.message || "")) { setToken(""); throw new UnauthorizedError(); }
+    throw new Error(`${error.message}${error.details ? ` (${error.details})` : ""}${error.hint ? ` — ${error.hint}` : ""}`);
+  }
   return data;
 }
 
@@ -91,8 +108,4 @@ export async function deleteApplicant(nick) {
 
 export async function resetAll() {
   await rpc("admin_reset", { p_token: getToken(), p_data: defaultSettings() });
-}
-
-export async function changeCode(newCode) {
-  await rpc("admin_change_code", { p_token: getToken(), p_new: newCode });
 }

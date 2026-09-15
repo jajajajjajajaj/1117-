@@ -14,7 +14,7 @@
 3. **Project Settings → API** 에서 `Project URL` 과 `anon public` 키를 복사합니다.
 
 관리자 접속은 **관리자 코드 하나**만 입력합니다. (아이디·이메일 없음)
-- 기본 코드: `1234` → 로그인 후 관리자 화면 하단 "설정 → 관리자 코드 변경"에서 바꾸세요.
+- 기본 코드: `1234`. 앱에는 코드 변경 화면이 없고 SQL로만 바꿉니다.
 - SQL로 바꾸려면: `update public.admin_access set code_hash = public.code_hash('새코드') where id = 1;`
 - `schema.sql` 을 다시 실행하면 코드가 `1234` 로 초기화됩니다.
 

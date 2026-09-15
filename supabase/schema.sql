@@ -49,9 +49,9 @@ $$;
 
 -- 관리자 코드를 1234 로 (재)설정합니다. 실행할 때마다 1234 로 초기화됩니다.
 -- (Re)sets the admin code to 1234 every time this file is run.
-delete from public.admin_access;
+delete from public.admin_access where id is not null;
 insert into public.admin_access (id, code_hash) values (1, public.code_hash('1234'));
-delete from public.admin_sessions;
+delete from public.admin_sessions where token is not null;
 
 -- 코드를 SQL로 바꾸려면 / to change the code via SQL:
 -- update public.admin_access set code_hash = public.code_hash('새코드') where id = 1;
@@ -125,7 +125,7 @@ create or replace function public.admin_reset(p_token text, p_data jsonb)
 returns void language plpgsql security definer set search_path = public as $$
 begin
   if not admin_check(p_token) then raise exception 'unauthorized'; end if;
-  delete from applicants;
+  delete from applicants where nick is not null;
   update settings set data = p_data, updated_at = now() where id = 1;
 end $$;
 

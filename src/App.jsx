@@ -113,11 +113,17 @@ export default function App() {
     setBusy(false);
   };
 
+  const adminError = (e) => {
+    console.error(e);
+    if (e?.name === "UnauthorizedError") { setScreen("adminLogin"); flash(t.sessionExpired); }
+    else flash(`${t.saveFail}: ${e.message}`);
+  };
+
   const saveCfg = async (next) => {
     setBusy(true);
     let ok = false;
     try { await db.saveSettings(next); setCfg(next); ok = true; }
-    catch (e) { console.error(e); flash(t.saveFail); }
+    catch (e) { adminError(e); }
     setBusy(false);
     return ok;
   };
@@ -159,17 +165,18 @@ export default function App() {
       await db.deleteApplicant(target);
       setApplicants((a) => { const n = { ...a }; delete n[target]; return n; });
       flash(t.deleted);
-    } catch (e) { console.error(e); flash(t.saveFail); }
+    } catch (e) { adminError(e); }
   };
 
   const resetAll = async () => {
     if (!window.confirm(t.confirmReset)) return;
+    setBusy(true);
     try {
       await db.resetAll();
-      setApplicants({});
-      setCfg(db.defaultSettings());
+      await reload();
       flash(t.resetDone);
-    } catch (e) { console.error(e); flash(t.saveFail); }
+    } catch (e) { adminError(e); }
+    setBusy(false);
   };
 
   const buildText = (day) => {
@@ -187,11 +194,6 @@ export default function App() {
     catch { setCopyText(txt); }
   };
 
-  const changePassword = async (pw) => {
-    try { await db.changeCode(pw); flash(t.pwChanged); return true; }
-    catch (e) { console.error(e); flash(t.saveFail); return false; }
-  };
-
   const signOut = async () => {
     await db.signOut();
     setScreen("home");
@@ -206,7 +208,7 @@ export default function App() {
     </div>
   );
 
-  if (!db.configured) return <div className="wrap"><div className="card">{t.notConfigured}<p className="note">{db.configProblem}</p></div></div>;
+  if (!db.configured) return <div className="wrap"><div className="card">{t.notConfigured}<p className="note">{db.configProblem}</p></div><div className="made">made by 프랜시스베이컨</div></div>;
   if (loading) return <div className="wrap empty">{t.loading}</div>;
 
   const dayKey = DAY_KEYS[step];
@@ -333,10 +335,11 @@ export default function App() {
           onAuto={doAuto} onManual={manualAssign} onUnassign={unassign} onDelete={deleteApplicant}
           onSaveCfg={saveCfg} onReset={resetAll} onCopy={copyResult} copyText={copyText}
           onReload={() => reload().then(() => flash(t.refreshed)).catch(() => flash(t.loadFail))}
-          onSignOut={signOut} onChangePassword={changePassword}
+          onSignOut={signOut}
         />
       )}
 
+      <div className="made">made by 프랜시스베이컨</div>
       {toast && <div className="toast">{toast}</div>}
     </div>
   );

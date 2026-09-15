@@ -2,11 +2,10 @@ import { useMemo, useState } from "react";
 import { SLOTS, FIELDS, DAY_KEYS, sortByPriority, num } from "../lib/logic.js";
 import { Toggle } from "./NumField.jsx";
 
-export default function AdminPanel({ t, L, cfg, applicants, day, setDay, busy, onAuto, onManual, onUnassign, onDelete, onSaveCfg, onReset, onCopy, copyText, onReload, onSignOut, onChangePassword }) {
+export default function AdminPanel({ t, L, cfg, applicants, day, setDay, busy, onAuto, onManual, onUnassign, onDelete, onSaveCfg, onReset, onCopy, copyText, onReload, onSignOut }) {
   const [pick, setPick] = useState({});
   const [cap, setCap] = useState(String(cfg.capacity));
   const [showList, setShowList] = useState(true);
-  const [newPw, setNewPw] = useState("");
 
   const ordered = useMemo(() => sortByPriority(day, applicants), [day, applicants]);
   const asg = cfg.assignments[day] || {};
@@ -159,12 +158,6 @@ export default function AdminPanel({ t, L, cfg, applicants, day, setDay, busy, o
         <div className="row" style={{ marginBottom: 12 }}>
           <input type="number" min="1" value={cap} onChange={(e) => setCap(e.target.value)} />
           <button type="button" className="btn sm" onClick={() => onSaveCfg({ ...cfg, capacity: Math.max(1, num(cap) || 1) })}>{t.save}</button>
-        </div>
-        <label className="f">{t.changePw}</label>
-        <div className="row" style={{ marginBottom: 12 }}>
-          <input type="password" value={newPw} onChange={(e) => setNewPw(e.target.value)} placeholder={t.newPw} autoComplete="new-password" />
-          <button type="button" className="btn sm" disabled={!newPw.trim() || busy}
-            onClick={() => onChangePassword(newPw.trim()).then((ok) => ok && setNewPw(""))}>{t.change}</button>
         </div>
         <button type="button" className="btn danger" onClick={onReset}>{t.resetAll}</button>
       </div>
