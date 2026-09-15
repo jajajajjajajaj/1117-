@@ -5,9 +5,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);
  font-family:'Pretendard Variable',Pretendard,'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',system-ui,-apple-system,sans-serif}
-.wrap{max-width:560px;margin:0 auto;padding:20px 16px 48px;min-height:100vh;display:flex;flex-direction:column}
-.wrap>*:not(.made):not(.toast){flex:none}
-.made{margin-top:auto;padding-top:28px;text-align:center;font-size:12px;color:#A3ACBC;letter-spacing:.02em;user-select:none}
+.wrap{max-width:560px;margin:0 auto;padding:20px 16px 48px}
 h1{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:0 0 4px}
 h2{font-size:20px;font-weight:800;letter-spacing:-.01em;margin:0}
 .sub{color:var(--mute);font-size:14px;line-height:1.5;margin:0 0 20px}

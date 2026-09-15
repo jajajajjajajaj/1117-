@@ -1,21 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 
-const rawUrl = (import.meta.env.VITE_SUPABASE_URL || "").trim().replace(/^["']|["']$/g, "");
+const url = (import.meta.env.VITE_SUPABASE_URL || "").trim().replace(/^["']|["']$/g, "");
 const key = (import.meta.env.VITE_SUPABASE_ANON_KEY || "").trim().replace(/^["']|["']$/g, "");
-
-// 주소는 https://xxxx.supabase.co 까지만 사용합니다. 뒤에 /rest/v1 등이 붙어 있어도 잘라냅니다.
-// Keep only the origin: strips any trailing path such as /rest/v1.
-function normalizeUrl(u) {
-  if (!u) return "";
-  const withScheme = /^https?:\/\//i.test(u) ? u : `https://${u}`;
-  try { return new URL(withScheme).origin; } catch { return ""; }
-}
-const url = normalizeUrl(rawUrl);
 
 let client = null;
 let problem = "";
-if (!rawUrl || !key) problem = "missing";
-else if (!url) problem = `invalid URL: ${rawUrl}`;
+if (!url || !key) problem = "missing";
 else {
   try {
     client = createClient(url, key);
