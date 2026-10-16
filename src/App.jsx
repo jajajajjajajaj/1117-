@@ -208,7 +208,7 @@ export default function App() {
     </div>
   );
 
-  if (!db.configured) return <div className="wrap"><div className="card">{t.notConfigured}<p className="note">{db.configProblem}</p></div><div className="made">made by 프랜시스베이컨</div></div>;
+  if (!db.configured) return <div className="wrap"><div className="card">{t.notConfigured}<p className="note">{db.configProblem}</p></div><div className="made">made by 베이컨(943)</div></div>;
   if (loading) return <div className="wrap empty">{t.loading}</div>;
 
   const dayKey = DAY_KEYS[step];
@@ -339,7 +339,7 @@ export default function App() {
         />
       )}
 
-      <div className="made">made by 프랜시스베이컨</div>
+      <div className="made">made by 베이컨(943)</div>
       {toast && <div className="toast">{toast}</div>}
     </div>
   );
